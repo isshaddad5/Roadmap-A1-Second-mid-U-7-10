@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadmap A1 Units 7-10 Interactive Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap');
+        
+        :root {
+            --primary: #1a365d;
+            --secondary: #3182ce;
+            --success: #38a169;
+            --error: #e53e3e;
+            --light: #f7fafc;
+            --border: #cbd5e0;
+            --chip-bg: #ebf8ff;
+            --chip-border: #90cdf4;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #edf2f7;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { margin: 0; font-size: 2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .user-name {
+            font-family: 'Amiri', 'Traditional Arabic', serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            display: inline-block;
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+        .score-board {
+            position: sticky;
+            top: 10px;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #live-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .section-nav button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 3px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .section-nav button:hover { background: #2b6cb0; }
+        .btn-reset { background: var(--error); }
+        
+        h2 { 
+            border-bottom: 3px solid var(--secondary); 
+            padding-bottom: 10px; 
+            margin-top: 40px; 
+            color: var(--primary); 
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .question-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--secondary);
+            transition: all 0.3s;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--primary);
+            flex-grow: 1;
+        }
+        .unit-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        .options-container { display: flex; flex-direction: column; gap: 8px; }
+        .option-row {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-row:hover { background: #e2e8f0; border-color: var(--secondary); }
+        .option-row.correct { background: #f0fff4; border-color: var(--success); color: var(--success); font-weight: bold; pointer-events: none; }
+        .option-row.incorrect { background: #fff5f5; border-color: var(--error); color: var(--error); pointer-events: none; }
+        
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f7fafc;
+        }
+        .feedback.show { display: block; }
+        .correct-text { color: var(--success); }
+        .incorrect-text { color: var(--error); }
+        
+        .card-correct { border-left-color: var(--success) !important; background-color: #f0fff4 !important; }
+        .card-incorrect { border-left-color: var(--error) !important; background-color: #fff5f5 !important; }
+
+        /* Rearrangement Styles */
+        .rearrange-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .word-bank, .target-bank {
+            min-height: 60px;
+            padding: 10px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            background: #fafafa;
+        }
+        .target-bank {
+            border-color: var(--secondary);
+            background: #ebf8ff;
+            min-height: 60px;
+        }
+        .word-chip {
+            background: var(--chip-bg);
+            border: 1px solid var(--chip-border);
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .word-chip:hover { background: #bee3f8; transform: translateY(-2px); }
+        .word-chip.locked { pointer-events: none; opacity: 0.8; }
+        
+        .rearrange-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+        .btn-check { background: var(--success); }
+        .btn-clear { background: #718096; }
+        .btn-sm:hover { opacity: 0.9; }
+
+        .label-tag {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .score-board { flex-direction: column; gap: 10px; }
+            .section-nav button { display: block; width: 100%; margin: 5px 0; }
+            .question-header { flex-direction: column; align-items: flex-start; }
+            .unit-badge { margin-left: 0; margin-top: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Roadmap A1 Units 7-10 Quiz</h1>
+    <div class="user-name">Mr. Islam Saber</div>
+    <p style="margin-top:10px; opacity:0.9;">100 Questions | Immediate Feedback & Interactive Ordering</p>
+</header>
+
+<div class="score-board">
+    <div id="live-score">Score: 0 / 100</div>
+    <div class="section-nav">
+        <button onclick="scrollToSection('vocab')">Vocab</button>
+        <button onclick="scrollToSection('grammar')">Grammar</button>
+        <button onclick="scrollToSection('rearrange')">Order</button>
+        <button class="btn-reset" onclick="resetQuiz()">Reset All</button>
+    </div>
+</div>
+
+<form id="quizForm">
+    <div id="vocab-section"></div>
+    <div id="grammar-section"></div>
+    <div id="rearrange-section"></div>
+</form>
+
+<script>
+    // --- DATA ---
+    const vocabQuestions = [
+        { q: "There isn't a ...... in the sky today. It's very clear.", o: ["cloud", "field", "island", "mountain"], a: "cloud", unit: 7 },
+        { q: "We swim in the ...... and walk in the fields.", o: ["sky", "lake", "mountain", "cloud"], a: "lake", unit: 7 },
+        { q: "Milan is in the ...... of Italy.", o: ["south", "east", "north", "west"], a: "north", unit: 7 },
+        { q: "The first month of the year is ...... .", o: ["February", "January", "March", "December"], a: "January", unit: 7 },
+        { q: "My birthday is on the ...... of April. (19th)", o: ["nineteenth", "ninth", "ninety", "ninety-first"], a: "nineteenth", unit: 7 },
+        { q: "Today is Wednesday 14th. ...... was Tuesday 13th.", o: ["Last week", "Yesterday", "Last weekend", "Next week"], a: "Yesterday", unit: 7 },
+        { q: "This book is very ...... . The words are long and I don't understand it.", o: ["easy", "fast", "difficult", "short"], a: "difficult", unit: 7 },
+        { q: "Don't take the bus. It's ...... . Take the train, it arrives at 8.30.", o: ["fast", "slow", "high", "young"], a: "slow", unit: 7 },
+        { q: "Mount Everest is 8,848 metres. It's a very ...... mountain.", o: ["low", "short", "high", "light"], a: "high", unit: 7 },
+        { q: "It was late at night and it was very ...... . We couldn't see anything.", o: ["light", "dark", "happy", "young"], a: "dark", unit: 7 },
+        { q: "When I was young, I ...... in a small town.", o: ["played", "lived", "watched", "travelled"], a: "lived", unit: 8 },
+        { q: "I usually ...... to school by bus every day.", o: ["travel", "watch", "clean", "start"], a: "travel", unit: 8 },
+        { q: "Yesterday, I ...... a sandwich at the restaurant.", o: ["buyed", "bought", "buy", "buying"], a: "bought", unit: 8 },
+        { q: "I ...... my keys on the way to work. I couldn't open the door.", o: ["lost", "lose", "losed", "losing"], a: "lost", unit: 8 },
+        { q: "We ...... to Tokyo last summer. It was amazing.", o: ["go", "goes", "went", "going"], a: "went", unit: 8 },
+        { q: "I ...... my wife at a work party two years ago.", o: ["meet", "met", "meeting", "meeted"], a: "met", unit: 8 },
+        { q: "On holiday, we sometimes ...... in the sea.", o: ["swim", "swimmed", "swam", "swimming"], a: "swam", unit: 8 },
+        { q: "We ...... a good time in Greece last month.", o: ["have", "has", "had", "having"], a: "had", unit: 8 },
+        { q: "Some days we were very busy. We ...... museums.", o: ["visit", "visited", "visiting", "visits"], a: "visited", unit: 8 },
+        { q: "One day we ...... for a nice walk outside the city.", o: ["go", "goes", "went", "going"], a: "went", unit: 8 },
+        { q: "The bag is ...... the table. (on top of it)", o: ["in", "on", "under", "at"], a: "on", unit: 9 },
+        { q: "The clock is ...... the computer and the books.", o: ["between", "among", "next", "in front"], a: "between", unit: 9 },
+        { q: "The picture is ...... the table. (higher than it)", o: ["below", "under", "above", "in"], a: "above", unit: 9 },
+        { q: "I usually ...... a book in the evening.", o: ["watch", "see", "read", "look"], a: "read", unit: 9 },
+        { q: "My brother loves to ...... video games every day.", o: ["play", "do", "make", "go"], a: "play", unit: 9 },
+        { q: "I often ...... music on the bus.", o: ["hear", "listen to", "sound", "watch"], a: "listen to", unit: 9 },
+        { q: "I haven't got a dictionary. I use a website on my ...... .", o: ["library", "phone", "board", "exam"], a: "phone", unit: 9 },
+        { q: "He didn't study, so he ...... the exam.", o: ["passed", "failed", "took", "made"], a: "failed", unit: 9 },
+        { q: "Please ...... the homework for tomorrow.", o: ["do", "make", "take", "go"], a: "do", unit: 9 },
+        { q: "We always ...... the library on Friday to study.", o: ["go to", "go", "visit to", "walk"], a: "go to", unit: 9 },
+        { q: "I moved to a new city, so I'd like to ...... some new friends.", o: ["do", "make", "have", "take"], a: "make", unit: 10 },
+        { q: "My job is very difficult. I'd love to ...... jobs.", o: ["change", "make", "start", "build"], a: "change", unit: 10 },
+        { q: "I'd like to ...... a small company one day.", o: ["make", "do", "start", "join"], a: "start", unit: 10 },
+        { q: "At the party, we are going to ...... games and dance.", o: ["do", "make", "play", "have"], a: "play", unit: 10 },
+        { q: "For the party, we need to buy some ...... and drinks.", o: ["sandwiches", "desserts", "salads", "fruits"], a: "sandwiches", unit: 10 },
+        { q: "I really like chicken ...... at parties.", o: ["drinks", "snacks", "sandwiches", "songs"], a: "sandwiches", unit: 10 },
+        { q: "The leaves fall from the trees in ...... .", o: ["spring", "summer", "autumn", "winter"], a: "autumn", unit: 10 },
+        { q: "I'm going to travel to Osaka ...... month.", o: ["in", "on", "at", "next"], a: "next", unit: 10 },
+        { q: "I'm going to stay with my family ...... 23rd December.", o: ["in", "on", "at", "for"], a: "on", unit: 10 },
+        { q: "We are going to stay in Italy ...... a fortnight.", o: ["in", "on", "at", "for"], a: "for", unit: 10 }
+    ];
+
+    const grammarQuestions = [
+        { q: "...... is the name of the place?", o: ["Where", "What", "When", "Who"], a: "What", unit: 7 },
+        { q: "...... many lakes are there in the park?", o: ["What", "How much", "How many", "Who"], a: "How many", unit: 7 },
+        { q: "...... do you usually go there? In June or July.", o: ["Where", "What", "When", "How much"], a: "When", unit: 7 },
+        { q: "I ...... thirty-one this year.", o: ["were", "was", "are", "is"], a: "was", unit: 7 },
+        { q: "My parents ...... on holiday last week.", o: ["was", "were", "is", "are"], a: "were", unit: 7 },
+        { q: "The restaurants ...... busy yesterday.", o: ["wasn't", "weren't", "isn't", "aren't"], a: "weren't", unit: 7 },
+        { q: "...... a party near the hotel last week.", o: ["There was", "There were", "There is", "There are"], a: "There was", unit: 7 },
+        { q: "...... any buses or cars in the old town.", o: ["There wasn't", "There weren't", "There isn't", "There aren't"], a: "There weren't", unit: 7 },
+        { q: "A: Was the hotel good? B: Yes, ...... .", o: ["it was", "it were", "there was", "there were"], a: "it was", unit: 7 },
+        { q: "A: Were they expensive? B: No, ...... .", o: ["they wasn't", "they weren't", "there wasn't", "there weren't"], a: "they weren't", unit: 7 },
+        { q: "I ...... in a village when I was young.", o: ["live", "lived", "living", "lives"], a: "lived", unit: 8 },
+        { q: "She ...... like the hot summer in Thailand.", o: ["didn't", "doesn't", "don't", "wasn't"], a: "didn't", unit: 8 },
+        { q: "We ...... to school by bus yesterday.", o: ["travel", "travelled", "travelling", "travels"], a: "travelled", unit: 8 },
+        { q: "I ...... up at eight o'clock yesterday.", o: ["get", "gets", "got", "getting"], a: "got", unit: 8 },
+        { q: "He ...... his coat because it was cold.", o: ["forget", "forgot", "forgets", "forgetting"], a: "forgot", unit: 8 },
+        { q: "...... you go to the park last weekend?", o: ["Do", "Does", "Did", "Were"], a: "Did", unit: 8 },
+        { q: "Where ...... you go on holiday last year?", o: ["do", "does", "did", "were"], a: "did", unit: 8 },
+        { q: "What ...... you eat for dinner last night?", o: ["do", "does", "did", "were"], a: "did", unit: 8 },
+        { q: "A: Did you have a good weekend? B: Yes, ...... .", o: ["I had", "I did", "I was", "I do"], a: "I did", unit: 8 },
+        { q: "A: Did they have fun? B: No, ...... .", o: ["they didn't", "they weren't", "they don't", "they aren't"], a: "they didn't", unit: 8 },
+        { q: "My grandfather is 82. I speak to ...... on the telephone every day.", o: ["he", "his", "him", "himself"], a: "him", unit: 9 },
+        { q: "Two of my good friends are Irina and Davide. I see ...... every weekend.", o: ["they", "them", "their", "themselves"], a: "them", unit: 9 },
+        { q: "This is a photo of my dog. Do you like ...... ?", o: ["it", "its", "them", "they"], a: "it", unit: 9 },
+        { q: "I enjoy ...... books at the weekend.", o: ["read", "reads", "reading", "to read"], a: "reading", unit: 9 },
+        { q: "My children don't like ...... by car.", o: ["travel", "travels", "travelling", "to travelling"], a: "travelling", unit: 9 },
+        { q: "...... you like playing football?", o: ["Do", "Does", "Are", "Is"], a: "Do", unit: 9 },
+        { q: "...... do you study English?", o: ["Because", "Why", "What", "How"], a: "Why", unit: 9 },
+        { q: "I study English ...... I need it for my job.", o: ["why", "because", "so", "but"], a: "because", unit: 9 },
+        { q: "Why didn't you study at school? ...... I didn't like my English teacher!", o: ["Because", "Why", "So", "And"], a: "Because", unit: 9 },
+        { q: "Why is English difficult for you? ...... I can't remember all the new words.", o: ["Why", "Because", "So", "But"], a: "Because", unit: 9 },
+        { q: "I'd like ...... a business one day.", o: ["start", "starting", "to start", "to starting"], a: "to start", unit: 10 },
+        { q: "We'd love ...... around the world for six months.", o: ["travel", "travelling", "to travel", "to travelling"], a: "to travel", unit: 10 },
+        { q: "...... you like to come to the party?", o: ["Do", "Would", "Are", "Will"], a: "Would", unit: 10 },
+        { q: "We ...... going to have a party next week.", o: ["am", "is", "are", "be"], a: "are", unit: 10 },
+        { q: "He ...... going to make sandwiches for the party.", o: ["am", "is", "are", "be"], a: "is", unit: 10 },
+        { q: "I'm not ...... to sing songs at the party!", o: ["go", "going", "goes", "went"], a: "going", unit: 10 },
+        { q: "...... you going to go on holiday next year?", o: ["Am", "Is", "Are", "Do"], a: "Are", unit: 10 },
+        { q: "When ...... you going to go?", o: ["am", "is", "are", "do"], a: "are", unit: 10 },
+        { q: "What ...... you going to do there?", o: ["am", "is", "are", "do"], a: "are", unit: 10 },
+        { q: "A: Are you going to drive? B: No, ...... .", o: ["I'm not", "I aren't", "I don't", "I wasn't"], a: "I'm not", unit: 10 }
+    ];
+
+    const rearrangeQuestions = [
+        { tokens: ["What", "is", "the", "name", "of", "the", "place", "?"], a: "What is the name of the place?", unit: 7 },
+        { tokens: ["Where", "is", "it", "?"], a: "Where is it?", unit: 7 },
+        { tokens: ["When", "do", "you", "usually", "go", "there", "?"], a: "When do you usually go there?", unit: 7 },
+        { tokens: ["I", "was", "at", "home", "last", "night", "."], a: "I was at home last night.", unit: 7 },
+        { tokens: ["Was", "there", "a", "party", "?"], a: "Was there a party?", unit: 7 },
+        { tokens: ["I", "walked", "to", "school", "yesterday", "."], a: "I walked to school yesterday.", unit: 7 },
+        { tokens: ["I", "didn't", "buy", "lunch", "."], a: "I didn't buy lunch.", unit: 8 },
+        { tokens: ["Where", "did", "you", "go", "on", "holiday", "?"], a: "Where did you go on holiday?", unit: 8 },
+        { tokens: ["The", "bag", "is", "on", "the", "table", "."], a: "The bag is on the table.", unit: 9 },
+        { tokens: ["I", "talk", "to", "him", "every", "day", "."], a: "I talk to him every day.", unit: 9 },
+        { tokens: ["She", "enjoys", "reading", "books", "."], a: "She enjoys reading books.", unit: 9 },
+        { tokens: ["Why", "do", "you", "study", "English", "?"], a: "Why do you study English?", unit: 9 },
+        { tokens: ["Because", "I", "like", "watching", "films", "."], a: "Because I like watching films.", unit: 9 },
+        { tokens: ["I'd", "like", "to", "start", "a", "business", "."], a: "I'd like to start a business.", unit: 10 },
+        { tokens: ["We're", "going", "to", "have", "a", "party", "."], a: "We're going to have a party.", unit: 10 },
+        { tokens: ["Are", "you", "going", "to", "go", "on", "holiday", "?"], a: "Are you going to go on holiday?", unit: 10 },
+        { tokens: ["What", "are", "you", "going", "to", "do", "?"], a: "What are you going to do?", unit: 10 },
+        { tokens: ["I", "met", "an", "old", "friend", "yesterday", "."], a: "I met an old friend yesterday.", unit: 10 },
+        { tokens: ["I", "see", "them", "every", "weekend", "."], a: "I see them every weekend.", unit: 10 },
+        { tokens: ["Would", "you", "like", "to", "come", "?"], a: "Would you like to come?", unit: 10 }
+    ];
+
+    // --- STATE ---
+    let currentScore = 0;
+    let totalQuestions = vocabQuestions.length + grammarQuestions.length + rearrangeQuestions.length;
+    let answeredQuestions = new Set();
+
+    function updateScore() {
+        document.getElementById('live-score').innerText = `Score: ${currentScore} / ${totalQuestions}`;
+    }
+
+    // --- RENDER MCQs ---
+    function renderMCQs(data, containerId, sectionPrefix) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, index) => {
+            const qNum = index + 1;
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `${sectionPrefix}-q${qNum}`;
+            
+            let optionsHtml = '';
+            item.o.forEach((opt, i) => {
+                const optLabel = String.fromCharCode(97 + i);
+                optionsHtml += `
+                    <div class="option-row" data-value="${opt}" onclick="handleMCQClick(this, '${sectionPrefix}', ${qNum}, '${opt.replace(/'/g, "\\'")}', '${item.a.replace(/'/g, "\\'")}')">
+                        <span class="option-label">${optLabel}) ${opt}</span>
+                    </div>
+                `;
+            });
+
+            card.innerHTML = `
+                <div class="question-header">
+                    <div class="question-text">${qNum}. ${item.q}</div>
+                    <span class="unit-badge">Unit ${item.unit}</span>
+                </div>
+                <div class="options-container">${optionsHtml}</div>
+                <div class="feedback" id="${sectionPrefix}-fb${qNum}"></div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // --- RENDER REARRANGE ---
+    function renderRearrange(data, containerId) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, index) => {
+            const qNum = index + 1;
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `rearrange-q${qNum}`;
+            
+            // Shuffle tokens for the word bank
+            let shuffled = [...item.tokens].sort(() => Math.random() - 0.5);
+            
+            let jumbledHtml = '';
+            shuffled.forEach((token, i) => {
+                jumbledHtml += `<div class="word-chip" onclick="moveWord(this, 'target-${qNum}', 'jumbled-${qNum}')" data-index="${i}">${token}</div>`;
+            });
+
+            card.innerHTML = `
+                <div class="question-header">
+                    <div class="question-text">${qNum}. Click the words to build the sentence:</div>
+                    <span class="unit-badge">Unit ${item.unit}</span>
+                </div>
+                <div class="rearrange-area">
+                    <div>
+                        <span class="label-tag">Your Sentence:</span>
+                        <div class="target-bank" id="target-${qNum}"></div>
+                    </div>
+                    <div>
+                        <span class="label-tag">Word Bank:</span>
+                        <div class="word-bank" id="jumbled-${qNum}">${jumbledHtml}</div>
+                    </div>
+                    <div class="rearrange-controls">
+                        <button type="button" class="btn-sm btn-check" onclick="checkRearrange(${qNum}, '${item.a.replace(/'/g, "\\'")}')">Check</button>
+                        <button type="button" class="btn-sm btn-clear" onclick="resetRearrange(${qNum})">Reset</button>
+                    </div>
+                    <div class="feedback" id="rearrange-fb-${qNum}"></div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // --- INTERACTION LOGIC ---
+    function handleMCQClick(element, prefix, qNum, selected, correct) {
+        const uniqueId = `${prefix}-${qNum}`;
+        if (answeredQuestions.has(uniqueId)) return;
+
+        const card = document.getElementById(`${prefix}-q${qNum}`);
+        const feedback = document.getElementById(`${prefix}-fb${qNum}`);
+        const rows = card.querySelectorAll('.option-row');
+
+        answeredQuestions.add(uniqueId);
+
+        if (selected === correct) {
+            element.classList.add('correct');
+            feedback.innerHTML = `<span class="correct-text">✔ Correct!</span>`;
+            currentScore++;
+        } else {
+            element.classList.add('incorrect');
+            rows.forEach(row => {
+                if (row.dataset.value === correct) row.classList.add('correct');
+            });
+            feedback.innerHTML = `<span class="incorrect-text">✘ Incorrect. Answer: ${correct}</span>`;
+        }
+        feedback.classList.add('show');
+        rows.forEach(row => row.style.pointerEvents = 'none');
+        updateScore();
+    }
+
+    function moveWord(chip, targetId, sourceId) {
+        const target = document.getElementById(targetId);
+        const source = document.getElementById(sourceId);
+        if (chip.parentElement.id === sourceId) {
+            target.appendChild(chip);
+        } else {
+            source.appendChild(chip);
+        }
+    }
+
+    function checkRearrange(qNum, correctAnswer) {
+        const uniqueId = `rearrange-${qNum}`;
+        if (answeredQuestions.has(uniqueId)) return;
+
+        const target = document.getElementById(`target-${qNum}`);
+        const chips = target.querySelectorAll('.word-chip');
+        
+        if (chips.length === 0) {
+            alert("Please arrange the words first!");
+            return;
+        }
+
+        // Build sentence from chips - handle punctuation properly
+        let userSentence = '';
+        chips.forEach((chip, index) => {
+            const word = chip.textContent;
+            // Don't add space before punctuation
+            if (word === '.' || word === '?' || word === '!' || word === ',') {
+                userSentence += word;
+            } else if (index > 0) {
+                const prevWord = chips[index - 1].textContent;
+                if (prevWord === '.' || prevWord === '?' || prevWord === '!' || prevWord === ',') {
+                    userSentence += ' ' + word;
+                } else {
+                    userSentence += ' ' + word;
+                }
+            } else {
+                userSentence = word;
+            }
+        });
+
+        // Normalize both for comparison
+        let userNorm = userSentence.toLowerCase().replace(/\s+/g, ' ').trim();
+        let corrNorm = correctAnswer.toLowerCase().replace(/\s+/g, ' ').trim();
+
+        const feedback = document.getElementById(`rearrange-fb-${qNum}`);
+        const card = document.getElementById(`rearrange-q${qNum}`);
+
+        answeredQuestions.add(uniqueId);
+
+        if (userNorm === corrNorm) {
+            card.classList.add('card-correct');
+            feedback.innerHTML = `<span class="correct-text">✔ Correct!</span>`;
+            currentScore++;
+        } else {
+            card.classList.add('card-incorrect');
+            feedback.innerHTML = `<span class="incorrect-text">✘ Incorrect. Answer: ${correctAnswer}</span>`;
+        }
+        feedback.classList.add('show');
+
+        // Lock chips
+        const allChips = document.querySelectorAll(`#jumbled-${qNum} .word-chip, #target-${qNum} .word-chip`);
+        allChips.forEach(c => c.classList.add('locked'));
+        updateScore();
+    }
+
+    function resetRearrange(qNum) {
+        if (answeredQuestions.has(`rearrange-${qNum}`)) return;
+        const target = document.getElementById(`target-${qNum}`);
+        const source = document.getElementById(`jumbled-${qNum}`);
+        const chips = target.querySelectorAll('.word-chip');
+        chips.forEach(c => source.appendChild(c));
+    }
+
+    function resetQuiz() {
+        if(!confirm("Are you sure you want to reset the entire quiz?")) return;
+        location.reload();
+    }
+
+    function scrollToSection(id) {
+        document.getElementById(id + '-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // --- INIT ---
+    renderMCQs(vocabQuestions, 'vocab-section', 'vocab');
+    renderMCQs(grammarQuestions, 'grammar-section', 'grammar');
+    renderRearrange(rearrangeQuestions, 'rearrange-section');
+    updateScore();
+</script>
+
+</body>
+</html>
